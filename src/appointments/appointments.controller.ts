@@ -26,7 +26,6 @@ export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'doctor')
   @Post()
   create(@Body() createAppointmentDto: CreateAppointmentDto) {
     return this.appointmentsService.create(createAppointmentDto);
@@ -43,6 +42,13 @@ export class AppointmentsController {
   @Get('me')
   findMine(@Req() request: AuthenticatedRequest) {
     return this.appointmentsService.findMine(request.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('doctor')
+  @Get()
+  findMineDoc(@Req() request: AuthenticatedRequest) {
+    return this.appointmentsService.findMineDoc(request.user.id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

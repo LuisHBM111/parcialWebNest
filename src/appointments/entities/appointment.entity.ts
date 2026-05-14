@@ -8,25 +8,17 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
-export const APPOINTMENT_STATUSES = [
-  'pending',
-  'confirmed',
-  'completed',
-  'cancelled',
-] as const;
+export const APPOINTMENT_STATUSES = ['pending', 'cancelled', 'done'] as const;
 
 export type AppointmentStatus = (typeof APPOINTMENT_STATUSES)[number];
 
 @Entity('appointments')
 export class Appointment {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
   @Column({ type: 'timestamptz' })
-  date: Date;
-
-  @Column()
-  reason: string;
+  datetime: Date;
 
   @Column({ default: 'pending' })
   status: AppointmentStatus;

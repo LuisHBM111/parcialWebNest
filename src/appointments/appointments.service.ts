@@ -59,7 +59,7 @@ export class AppointmentsService {
   async findAll() {
     const appointments = await this.appointmentsRepository.find({
       relations: { patient: true, doctor: true },
-      order: { date: 'ASC' },
+      order: { datetime: 'ASC' },
     });
 
     return appointments.map((appointment) => this.toResponse(appointment));
@@ -69,8 +69,20 @@ export class AppointmentsService {
     const appointments = await this.appointmentsRepository.find({
       where: [{ patient: { id: userId } }, { doctor: { id: userId } }],
       relations: { patient: true, doctor: true },
-      order: { date: 'ASC' },
+      order: { datetime: 'ASC' },
     });
+
+    return appointments.map((appointment) => this.toResponse(appointment));
+  }
+
+  async findMineDoc(doctorId: string) {
+    const appointments = await this.appointmentsRepository
+      .createQueryBuilder('appointment')
+      .leftJoinAndSelect('appointment.patient', 'patient')
+      .leftJoinAndSelect('appointment.doctor', 'doctor')
+      .where('appointment.doctor_id = :doctorId', { doctorId })
+      .orderBy('appointment.datetime', 'ASC')
+      .getMany();
 
     return appointments.map((appointment) => this.toResponse(appointment));
   }
@@ -101,8 +113,7 @@ export class AppointmentsService {
   private toResponse(appointment: Appointment) {
     return {
       id: appointment.id,
-      date: appointment.date,
-      reason: appointment.reason,
+      date: appointment.datetime,
       status: appointment.status,
       patient: {
         id: appointment.patient.id,
