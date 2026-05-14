@@ -27,7 +27,7 @@ import { UsersModule } from './users/users.module';
         password: configService.getOrThrow<string>('DB_PASS'),
         database: configService.getOrThrow<string>('DB_NAME'),
         entities: [User, Role, Appointment],
-        synchronize: false,
+        synchronize: true,
       }),
     }),
 

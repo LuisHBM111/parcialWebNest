@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
+  ParseIntPipe,
   Post,
   Req,
   UseGuards,
@@ -46,21 +48,30 @@ export class AppointmentsController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('doctor')
-  @Get()
+  @Get('me')
   findMineDoc(@Req() request: AuthenticatedRequest) {
     return this.appointmentsService.findMineDoc(request.user.id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'doctor')
+  @Roles('doctor')
   @Patch(':id/status')
   updateStatus(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateAppointmentStatusDto: UpdateAppointmentStatusDto,
   ) {
     return this.appointmentsService.updateStatus(
       id,
       updateAppointmentStatusDto,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  deleteAppointment(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.appointmentsService.deleteAppointment(id, request.user.id);
   }
 }

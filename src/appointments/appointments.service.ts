@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -43,8 +44,7 @@ export class AppointmentsService {
     const appointment = this.appointmentsRepository.create({
       patient,
       doctor,
-      date: new Date(createAppointmentDto.date),
-      reason: createAppointmentDto.reason,
+      datetime: new Date(createAppointmentDto.datetime),
     });
 
     const savedAppointment =
@@ -88,7 +88,7 @@ export class AppointmentsService {
   }
 
   async updateStatus(
-    appointmentId: string,
+    appointmentId: number,
     updateAppointmentStatusDto: UpdateAppointmentStatusDto,
   ) {
     const appointment = await this.appointmentsRepository.findOne({
@@ -110,10 +110,33 @@ export class AppointmentsService {
     };
   }
 
+  async deleteAppointment(appointmentId: number, userId: string) {
+    const appointment = await this.appointmentsRepository.findOne({
+      where: { id: appointmentId },
+      relations: { patient: true },
+    });
+
+    if (!appointment) {
+      throw new NotFoundException('Cita no encontrada');
+    }
+
+    if (appointment.patient.id !== userId) {
+      throw new ForbiddenException(
+        'No puedes eliminar una cita de otro usuario',
+      );
+    }
+
+    await this.appointmentsRepository.remove(appointment);
+
+    return {
+      message: 'Cita eliminada con exito',
+    };
+  }
+
   private toResponse(appointment: Appointment) {
     return {
       id: appointment.id,
-      date: appointment.datetime,
+      datetime: appointment.datetime,
       status: appointment.status,
       patient: {
         id: appointment.patient.id,
