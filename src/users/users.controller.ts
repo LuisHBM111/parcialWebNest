@@ -52,10 +52,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Patch(':id/roles')
-  assignRoles(
-    @Param('id') id: string,
-    @Body() assignRolesDto: AssignRolesDto,
-  ) {
+  assignRoles(@Param('id') id: string, @Body() assignRolesDto: AssignRolesDto) {
     return this.usersService.assignRoles(id, assignRolesDto.roles);
   }
 }

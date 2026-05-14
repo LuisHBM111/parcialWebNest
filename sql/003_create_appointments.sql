@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS appointments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  date TIMESTAMPTZ NOT NULL,
+  reason VARCHAR(255) NOT NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'pending',
+  patient_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  doctor_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP NOT NULL DEFAULT now()
+);
