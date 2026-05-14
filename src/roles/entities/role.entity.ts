@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../../users/entities/user.entity/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('roles')
-class Role {
+export class Role {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -15,5 +15,3 @@ class Role {
   @ManyToMany(() => User, (user) => user.roles)
   users: User[];
 }
-
-export default Role;
